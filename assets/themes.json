@@ -1,0 +1,30 @@
+[
+    {
+        "information": {
+            "name": "Default Light",
+            "description": "Default light theme",
+            "author": "@nebelfox"
+        },
+        "colors": {
+            "foreground": "",
+            "background": "",
+            "highlight": "",
+            "positive": "",
+            "negative": ""
+        }
+    },
+    {
+        "information": {
+            "name": "Default Dark",
+            "description": "Default dark theme",
+            "author": "@nebelfox"
+        },
+        "colors": {
+            "foreground": "",
+            "background": "",
+            "highlight": "",
+            "positive": "",
+            "negative": ""
+        }
+    }
+]

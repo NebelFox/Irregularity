@@ -1,0 +1,15 @@
+{
+    "app": {
+        // "isFirstLaunch": true,
+        "currentThemeIndex": 0,
+        "isVibrationAllowed": false
+    },
+    "globals": {
+        "priority": 2,
+        "isPriorityLocked": false
+    },
+    "overrideWithGlobalValue": {
+        "priority": false,
+        "isPriorityLocked": false
+    }
+}
