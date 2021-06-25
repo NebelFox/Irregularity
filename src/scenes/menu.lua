@@ -1,3 +1,6 @@
+-- components:
+-- buttons: play, edit wordlist, statistics, about, settings
+
 local composer = require( "composer" )
  
 local scene = composer.newScene()

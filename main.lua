@@ -8,8 +8,12 @@
 
 local composer = require "composer"
 
-math.randomseed (os.time ())
+-- local widgets = require "src.widgets"
+require ("src.widgets").init {
+    "template",
+    "button"
+}
 
-require "src.words.dbtest"
+math.randomseed (os.time ())
 
 -- composer.gotoScene ("src.scenes.menu")

@@ -1,8 +1,12 @@
 {
     "app": {
         // "isFirstLaunch": true,
-        "currentThemeIndex": 0,
-        "isVibrationAllowed": false
+        "theme": 0,
+        "vibration": false
+    },
+    "sounds": {
+        "correctness": 1.0,
+        "taps": 1.0
     },
     "globals": {
         "priority": 2,

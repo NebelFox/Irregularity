@@ -27,9 +27,9 @@ function M.random ()
 end
 
 M.word = {}
-M.word = setmetatable (M.word, {__index = function (index) return data[index].word end})
-M.word.meaning = setmetatable ({}, {__index = function (index) return data[index].meaning end})
-M.word.forms = setmetatable ({}, {__index = function (index) return data[index].forms end})
+M.word = setmetatable (M.word, {__index = function (self, index) return data[index].word end})
+M.word.meaning = setmetatable ({}, {__index = function (self, index) return data[index].meaning end})
+M.word.forms = setmetatable ({}, {__index = function (self, index) return data[index].forms end})
 function M.word.random ()
     return data[random (#data)].word
 end
@@ -42,7 +42,7 @@ M.settings = setmetatable (
     {
         priority = setmetatable (
             {},
-            {__index=function (index)
+            {__index=function (self, index)
                 local priority = data[index].settings.priority
                 if (settings.overrideWithGlobalValue.priority or priority == nil) then
                     return settings.globals.priority
@@ -53,7 +53,7 @@ M.settings = setmetatable (
         ),
         isPriorityLocked = setmetatable (
             {},
-            {__index=function (index)
+            {__index=function (self, index)
                 local state = data[index].settings.isPriorityLocked
                 if (settings.overrideWithGlobalValue.isPriorityLocked or state == nil) then
                     return settings.globals.isPriorityLocked
@@ -63,10 +63,10 @@ M.settings = setmetatable (
             end}
         )
     },
-    {__index = function (index) return data[index].settings end}
+    {__index = function (self, index) return data[index].settings end}
 )
 
 -- statistics
-M.statistics = setmetatable ({}, {__index=function (index) return data[index].statistics end})
+M.statistics = setmetatable ({}, {__index=function (self, index) return data[index].statistics end})
 
 return setmetatable (M, {__index=data})

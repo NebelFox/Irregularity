@@ -1,31 +1,31 @@
 local next = next
 
-local Set = {}
+local M = {}
 
-function Set.contains (self, item)
+function M.contains (self, item)
     return self[item] ~= nil
 end
 
-function Set.add (self, item)
+function M.add (self, item)
     self[item] = true
 end
 
-function Set.remove (self, item)
+function M.remove (self, item)
     self[item] = nil
 
-function Set.clear (self)
+function M.clear (self)
     for key, value in pairs (self) do
         self[key] = nil
     end
 end
 
-function Set.empty (self)
+function M.empty (self)
     return next (self) == nil
 end
 
-local metatable = {__index = Set}
+local metatable = {__index = M}
 
-function new (iterable)
+local function new (iterable)
     local self = setmetatable ({}, metatable)
     for _, item in iterable do
         self[item] = true

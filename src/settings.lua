@@ -21,9 +21,11 @@ function M.load ()
 end
 
 function M.save ()
-    if isChanged and user then
+    if isChanged then
         local file = io.open (userFilepath, 'w')
-        file:write (json.encode (user))
+        if user then
+            file:write (user)
+        end
         io.close (file)
         isChanged = false
     end
@@ -38,8 +40,16 @@ function M.set (category, key, value)
         user[category] = {}
         isChanged = true
     end
-    isChanged = isChanged or (user[key] == value)
+    isChanged = isChanged or (user[key] ~= value)
     user[key] = value
+    if isChanged then
+        Runtime:dispatchEvent ({
+            name="settingChanged",
+            category=catrgory,
+            key=key,
+            value=value
+        })
+    end
 end
 
 function M.reset (category, key)
