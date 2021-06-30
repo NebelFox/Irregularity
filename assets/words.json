@@ -1,52 +1,14 @@
 [
     {
-        "word": {
-            "meaning": "",
-            "forms": [
-                "",
-                "",
-                ""
-            ]
-        }
-    },
-    {
-        "statistics": {
-            "answers": {
-                "permanent": {
-                    "total": 0,
-                    "correct": 0
-                },
-                "weekly": {
-                    "total": 0,
-                    "correct": 0
-                },
-                "forms": [
-                    {
-                        "total": 0,
-                        "correct": 0
-                    },
-                    {
-                        "total": 0,
-                        "correct": 0
-                    },
-                    {
-                        "total": 0,
-                        "correct": 0
-                    }
-                ]
-            }
-        },
-        "word": {
-            "meaning": "",
-            "forms": [
-                "",
-                "",
-                ""
-            ]
-        },
-        "settings": {
-            "priority": 2,
-            "isPriorityLocked": false
+        "meaning": "",
+        "forms": [
+            "",
+            "",
+            ""
+        ],
+        "answers": {
+            "total": 0,
+            "correct": 0
         }
     }
 ]

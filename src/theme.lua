@@ -2,45 +2,46 @@ local Runtime, sub = Runtime, string.sub
 
 local json = require "json"
 
-local M = {}
 
-local filepath = system.PathForFile ("assets/themes.json", system.ResourceDirectory)
+local theme = {}
 
+local filepath = system.pathForFile ("assets/themes.json", system.ResourceDirectory)
+
+-- local widgets = require "src.widgets"
 local settings = require "src.settings"
 
 local themes
-local currentThemeIndex
+local currentThemeIndex = (settings "app.theme")
 
-local function hex2rgb (hex)
-    local rgb = {}
-    for i = 1, 3 do
-        rgb[i] = tonumber ("0x"..sub (hex, i + (i-1)*2, i*3 - 1)) / 255
-    end
-    return rgb
-end
-
-function M.load ()
+function theme.init ()
+    local hex2rgb = require ("src.utils").convert.hex2rgb
     themes = json.decodeFile (filepath)
     for _, theme in ipairs (themes) do
         for key, value in pairs (theme) do
-            value[key] = hex2rgb (value)
+            theme[key] = hex2rgb (value)
         end
     end
 end
 
-function M.update ()
-    currentThemeIndex = settings.app.theme
+function theme.next ()
+    currentThemeIndex = currentThemeIndex + 1
+    if currentThemeIndex > #themes then
+        currentThemeIndex = 1
+    end
+    settings.set ("app.theme", currentThemeIndex)
 end
 
-M.load ()
-M.update ()
-
-Runtime:addEventListener ("settingsChanged", function (event)
-    if event.category == "app" and event.key == "theme" then
-        M.update ()
+function theme.previous ()
+    currentThemeIndex = currentThemeIndex - 1
+    if currentThemeIndex < 1 then
+        currentThemeIndex = #themes
     end
-end)
+    settings.set ("app.theme", currentThemeIndex)
+end
 
-return setmetatable (M, {__index=function (self, key)
-    return unpack(themes[currentThemeIndex][key])
+-- theme.load ()
+-- display.setDefault ("background", unpack (themes[currentThemeIndex].background))
+
+return setmetatable (theme, {__index=function (self, key)
+    return themes[currentThemeIndex][key]
 end})

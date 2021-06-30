@@ -1,19 +1,10 @@
 {
-    "app": {
-        // "isFirstLaunch": true,
-        "theme": 0,
-        "vibration": false
-    },
-    "sounds": {
-        "correctness": 1.0,
-        "taps": 1.0
-    },
-    "globals": {
-        "priority": 2,
-        "isPriorityLocked": false
-    },
-    "overrideWithGlobalValue": {
-        "priority": false,
-        "isPriorityLocked": false
-    }
+    "app.theme": 1,
+    "app.vibration": false,
+
+    "difficulty.extraKeysPercentage": 0.5,
+    "difficulty.hideFullyUsedKeys": true,
+
+    "sounds.correct": 1.0,
+    "sounds.tap": 1.0
 }

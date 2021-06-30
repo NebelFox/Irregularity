@@ -1,30 +1,16 @@
 [
     {
-        "information": {
-            "name": "Default Light",
-            "description": "Default light theme",
-            "author": "@nebelfox"
-        },
-        "colors": {
-            "foreground": "",
-            "background": "",
-            "highlight": "",
-            "positive": "",
-            "negative": ""
-        }
+        "foreground": "453565",
+        "background": "cfbfda",
+        "highlight": "AF00AF",
+        "positive": "00FF00",
+        "negative": "FF0000"
     },
     {
-        "information": {
-            "name": "Default Dark",
-            "description": "Default dark theme",
-            "author": "@nebelfox"
-        },
-        "colors": {
-            "foreground": "",
-            "background": "",
-            "highlight": "",
-            "positive": "",
-            "negative": ""
-        }
+        "foreground": "544278",
+        "background": "181426",
+        "highlight": "8F008F",
+        "positive": "00FF00",
+        "negative": "FF0000"
     }
 ]

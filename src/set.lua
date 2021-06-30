@@ -1,36 +1,38 @@
 local next = next
 
-local M = {}
+local utils = require "src.utils"
 
-function M.contains (self, item)
+local Set = {}
+
+function Set.contains (self, item)
     return self[item] ~= nil
 end
 
-function M.add (self, item)
+function Set.add (self, item)
     self[item] = true
 end
 
-function M.remove (self, item)
+function Set.remove (self, item)
     self[item] = nil
 
-function M.clear (self)
+function Set.clear (self)
     for key, value in pairs (self) do
         self[key] = nil
     end
 end
 
-function M.empty (self)
+function Set.empty (self)
     return next (self) == nil
 end
 
-local metatable = {__index = M}
+-- local metatable = {__index = M}
 
-local function new (iterable)
-    local self = setmetatable ({}, metatable)
-    for _, item in iterable do
+function Set.init (self, args)
+    -- local self = setmetatable ({}, metatable)
+    for _, item in pairs(iterable) do
         self[item] = true
     end
-    return self
+    -- return self
 end
 
-return new
+return utils.class (Set)

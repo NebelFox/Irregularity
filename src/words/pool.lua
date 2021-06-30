@@ -2,25 +2,27 @@ local Runtime, random = Runtime, math.random
 
 local settings = require "src.settings"
 local words = require "src.words.words"
+local utils = require "src.utils"
 
 local Pool = {}
+-- local metatable = {__index = M}
 
-local function pass (priority)
-    return random (3) <= priority
+local function pass (ratio)
+    return (1-ratio)*0.9 > random ()
 end
 
 function Pool.next (self)
     if (self.index > #self.indices) then
         Runtime:dispatchEvent ({
             name="wordsPoolIterationCompleted",
-            pool=self
+            M=self
             })
         self:reset ()
     end
 
     self.index = self.index + 1
 
-    if (pass (words.settings.priority[self.index])) then
+    if (pass (words.answers:ratio ())) then
         return self:next ()
     end
 
@@ -40,23 +42,13 @@ function Pool.reset (self)
     self:shuffle ()
 end
 
-local metatable = {__index = Pool}
-
-local function new (predicate)
-    self = setmetatable ({}, metatable)
-
-    local predicate = predicate or function (word) return word.settings.priority > 0 end
-
+function Pool.init (self, args)
     self.indices = {}
     for index, word in ipairs (words) do
-        if predicate (word) then
-            self.indices[#self.indices+1] = index
-        end
+        self.indices[#self.indices+1] = index
     end
 
     self:reset ()
-
-    return self
 end
 
-return new
+return utils.class (Pool)

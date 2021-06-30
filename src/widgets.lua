@@ -1,67 +1,87 @@
-local require, unpack, table, display, string = requiree, unpack, table, display, string
+-- globals aliases
+local require, unpack, table, display, string = require, unpack, table, display, string
+local delay = timer.performWithDelay
+
+-- required modules
+local json = require "json"
 local composer = require "composer"
+local settings = require "src.settings"
+local theme = require "src.theme"
+local utils = require "src.utils"
 
-local function path (filename)
-    return "src.widgets." .. filename
-end
--- local function snake2camel (s)
---     local position = 0
---     position = string.find (s, "_", position+1, true)
---     while (position) do
+-- setup file
+local configs = json.decodeFile (system.pathForFile ("assets/widgets-config.json", system.ResourceDirectory))
 
---         position = string.find (s, "_", position+1, true)
---     end
--- end
+-- module table
+local widgets = {}
 
-local M = {}
+-- group to add widgets into
+local group = display.getCurrentStage ()
 
-local group
-
+-- registered widget classes
 local components = {}
-local constructors = {}
+
+-- all currently living widgets
 local instances = {}
 
-function M.register (signature)
-    components[signature] = require (path (signature))
-    constructors[signature] = function (args)
-        instances[#instances+1] = components[signature] (#instances+1, group, args)
-        return instances[#instances]
+-- starts tracking the instance
+function widgets.register (instance)
+    table.insert (instances, instance)
+    group:insert (instance.group)
+    -- for easy deletion from the instances
+    instance._index = #instances
+end
+
+-- registers all the components
+-- from the linked file
+function widgets.init ()
+    local Widget = require "src.widgets.widget"
+    for filename, config in pairs (configs) do
+        components[utils.convert.snake2pascal (filename)] = Widget (
+            require ("src.widgets." .. filename),
+            config
+        )
+    end
+    widgets.Background ()
+    widgets.guard = widgets.TouchGuard ()
+end
+
+-- recolors all the widgets and background
+-- according to the current theme
+function widgets.recolor ()
+    for _, instance in pairs (instances) do
+        instance:recolor ()
     end
 end
 
-function M.init (signatures)
-    for _, signature in ipairs (signatures) do
-        M.register (signature)
+-- hides all the widgets
+function widgets.hideAll (doDestroyOnComplete)
+    for _, instance in pairs (instances) do
+        instance:hide (doDestroyOnComplete)
     end
 end
 
-function M.onSceneChanged (event)
-    if event.doDestroyAll then M.destroy () end
-    group = event.group
+-- removes a widget instance from the tracking list,
+-- so it can be collected with GC
+function widgets.forget (instance)
+    table.remove (instances, instance._index)
 end
 
-function M.recolor ()
-    setDefault ("background", theme.background)
-    for i = 1, #instances do
-        instances[i]:recolor ()
+-- destroys all the instances of widgets
+function widgets.destroyAll ()
+    for _, instance in ipairs (instances) do
+        instance:destroy ()
     end
 end
 
-function M.hide (doDestroyOnComplete)
-    for i = #instances, 1, -1 do
-        instances[i]:hide (doDestroyOnComplete)
-    end
+-- automates the widgets.recolor ()
+local function onSettingChanged (key, value)
+    if key == "app.theme" then widgets.recolor () end
 end
+settings.subscribe (onSettingChanged)
 
-function M.forget (instance)
-    table.remove (instances, instance.index)
-end
+-- function widgets.animation (duration)
 
-function M.destroy ()
-    for i=#instances, 1, -1 do
-        instances[i]:destroy ()
-        instances[i] = nil
-    end
-end
+-- end
 
-return setmetatable (M, {__index=constructors})
+return setmetatable (widgets, {__index=components})

@@ -1,28 +1,50 @@
+-- required modules
 local json = require "json"
 
-local path, Runtime = system.pathForFile, Runtime
+-- globals aliases
+local path, Runtime, io = system.pathForFile, Runtime, io
 
-local M = {}
-
+-- settings files
 local defaultFilepath = path ("assets/settings-default.json", system.ResourceDirectory)
 local userFilepath = path ("settings-user.json", system.DocumentsDirectory)
 
+-- module table
+local settings = {}
+
+-- settings data
 local default
 local user
 
+-- whether there is a reason of rewriting the user file
 local isChanged = false
 
-function M.load ()
-    default = json.decodeFile (defaultFilepath)
-    user = setmetatable (
-        userFilepath and json.decodeFile (userFilepath) or {},
-        {__index=default}
-    )
+-- reactive methods
+local subscribers = {}
+local function notify (key, value)
+    for _, subscriber in ipairs(subscribers) do
+        subscriber (key, value)
+    end
+end
+function settings.subscribe (subscriber)
+    table.insert (subscribers, subscriber)
+end
+function settings.unsubscribe (subscriber)
+    table.remove (subscribers, table.indexOf (subscribers, subscriber))
+end
+function settings.unsubscribeAll ()
+    subscribers = {}
 end
 
-function M.save ()
+-- io part
+function settings.load ()
+    default = json.decodeFile (defaultFilepath)
+    -- if there is no file or it's content is empty
+    user = setmetatable (json.decodeFile (userFilepath) or {}, {__index=default})
+end
+function settings.save ()
     if isChanged then
         local file = io.open (userFilepath, 'w')
+        -- if settings are reset - the file is cleared, so it takes less storage space
         if user then
             file:write (user)
         end
@@ -31,51 +53,32 @@ function M.save ()
     end
 end
 
-function M.get (category, key)
-    return user[category][key]
-end
-
-function M.set (category, key, value)
-    if user[category] == nil and value ~= nil then
-        user[category] = {}
+-- reactive setter method
+function settings.set (key, value)
+    if user[key] ~= value then
+        user[key] = value
         isChanged = true
-    end
-    isChanged = isChanged or (user[key] ~= value)
-    user[key] = value
-    if isChanged then
-        Runtime:dispatchEvent ({
-            name="settingChanged",
-            category=catrgory,
-            key=key,
-            value=value
-        })
+        notify (key, value)
     end
 end
 
-function M.reset (category, key)
-    isChanged = user[category][key] ~= nil
-    user[category][key] = nil
-    if not user[category] then
-        user[category] = nil
-    end
+-- reactive reset methods
+function settings.reset (key)
+    isChanged = rawget(user, key) ~= nil
+    user[key] = nil
+    notify (key, default[key])
 end
-
-function M.resetAll ()
+function settings.resetAll ()
     isChanged = next (user) ~= nil
-    user = {}
+    for key, value in pairs (user) do
+        notify (key, default[key])
+    end
+    user = setmetatable ({}, {__index=default})
 end
 
-M.load ()
+settings.load ()
 
--- in case the first launch must be recognized
--- function onSystem (event)
---     if event.type == "applicationExit" and defualt.app.isFirstLaunch then
---         default.app.isFirstLaunch = false
---         file = io.open (defaultPath, 'w')
---         file:write (json.encode (default))
---         io.close (file)
---     end
--- end
--- Runtime:addEventListener ("system")
-
-return M
+-- preventing changing any values without the settings.set 
+return setmetatable (settings, {__call = function (self, key)
+    return user[key]
+end})
