@@ -1,5 +1,10 @@
 local utils = require "src.utils"
-local Answers = {}
+
+local Answers = utils.class ()
+
+-- 0 - the ratio is absolutely ignored, and frequencies are uniform 
+-- 1 - words with ratio==1 are completely hidden
+Answers.ratioCoefficient = 0.8
 
 function Answers.init (self, args)
     self.total = args.total
@@ -12,7 +17,13 @@ function Answers.add (self, isCorrect)
 end
 
 function Answers.ratio (self)
+    -- correctness of user answers
     return self.correct / self.total
 end
 
-return utils.class (Answers)
+function Answers.priority (self)
+    -- the higher the ration - the lower the frequency
+    return (1 - self:ratio () * Answers.ratioCoefficient)
+end
+
+return Answers

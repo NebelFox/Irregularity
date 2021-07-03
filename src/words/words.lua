@@ -25,6 +25,14 @@ function words.save ()
 
 end
 
+function words.count ()
+    return #data
+end
+
+function words.random ()
+    return data[random (#data)]
+end
+
 function words.randomForm ()
     return words.random ().forms[random(3)]
 end
@@ -35,22 +43,11 @@ function words.sorted (key, reverse)
         table.insert (indices, key)
     end
     if reverse then
-        table.sort (indices, function (left, right) return key(words[left]) > key(words[right]) end)
+        table.sort (indices, function (left, right) return key(data[left]) > key(data[right]) end)
     else
-        table.sort (indices, function (left, right) return key (words[left]) < key (words[right]) end)
+        table.sort (indices, function (left, right) return key (data[left]) < key (data[right]) end)
     end
     return indices
 end
 
-words.key = {}
-function key.priority (word)
-    return word.priority
-end
-function key.permanentAccuracy (word)
-    return word["answers.permanent"]:ratio ()
-end
-function key.weeklyAccuracy (word)
-    return word["answers.weekly"]:ratio ()
-end
-
-return setmetatable (words, {__index=function (self, key) return data[key] end})
+return setmetatable (words, {__index=function (self, index) return data[index] end})

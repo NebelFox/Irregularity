@@ -37,14 +37,14 @@ local function new (class, config)
             local self = setmetatable ({}, {__index=class})
             self.group = display.newGroup ()
             -- self.group.isVisible = args.isVisible or false
+            class.init (self, args)
             if args.parent then
                 self.parent = args.parent
                 self.parent.group:insert (self.group)
             else
                 widgets.register (self)
+                self:recolor ()
             end
-            class.init (self, args)
-            self:recolor ()
             return self
         end
     })
